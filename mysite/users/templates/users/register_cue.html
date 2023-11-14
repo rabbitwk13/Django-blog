@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+{% load static category %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册成功页面</title>
+    <link rel="stylesheet" href='{% static "users/bulma.css" %}'>
+	<link rel="stylesheet" href='{% static "sass/test.css" %}'>
+</head>
+<body>
+    <div class="container">
+    <a href="{% url "users:login" %}" class="  "> <button class="button is-success">若是注册，则注册成功，点击跳转至登录页面</button></a></div>
+    <div class="container">
+    <a href="{% url "users:login" %}" class="  "> <button class="button is-danger">若是登录，则登录失败，点击跳转至登录页面</button></a></div>    
+</body>
+</html>

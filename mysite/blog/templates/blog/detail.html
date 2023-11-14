@@ -1,0 +1,129 @@
+{% extends "blog/base.html" %}
+{% block section %}
+{% csrf_token %} 
+{% load static %} 
+<style>
+  .button.is-light:hover, .button.is-light.is-hovered {
+    background-color: #eeeeee;
+    border-color: transparent;
+    color: rgba(0, 0, 0, 2);
+}
+</style>
+<script>
+   
+      
+</script>
+
+<div class="box">
+    <div class="" style="display: flex; justify-content:space-between;">
+      <h4 class="is-size-3 has-text-weight-bold">
+        {{ post.title }}
+    </h4>
+    {% if user.is_authenticated %}
+    {% if is_favorited %}
+    <a class=" button is-light is-pulled-right has-background-info	" href="{% url 'blog:favorite' post.id %}" style="border: navajowhite;"><span><strong>已收藏</strong></span><span class="icon">
+      <i class="fas fa-paw has-text-success"></i>
+      </span></a>
+    {% else %}
+    <a class=" button is-light is-pulled-right" href="{% url 'blog:favorite' post.id %}" style="border: navajowhite;"><span>未收藏</span><span class="icon">
+      <i class="fas fa-paw has-text-info"></i>
+      </span></a>
+    {%endif%}
+    {%endif%}
+    </div>
+    <div class=" is-size-6 has-text-grey pt-1 pb-1">
+        <span class="mr-3">作者：{{ post.owner }}</span> <span class="mr-3">发布日期：{{ post.add_date }}</span><span class="mr-3">浏览量：{{ post.pv }}</span>
+    </div>
+    <div class="content">
+        <h4 style="color: skyblue">文章描述</h4>
+        <p>{{post.desc|safe}}</p>
+        <h3 style="color: slateblue">文章内容</h3>
+        <p>{{post.content|safe}}</p>
+        
+        {% if user.is_authenticated %}
+        <div style="height:30px;"></div>
+        <form action="{% url 'blog:comment' %}" method="post">
+            {% csrf_token %} 
+            <article class="media">
+               
+                <div class="media-left">
+                 
+                  {% if user.userprofile.nike_name %}
+                  <span class=" has-text-black-ter">{{ user.userprofile.nike_name }}</span>
+                  {% else %}
+                  <span class=" has-text-black-ter">暂未设置用户昵称</span>
+                  {% endif %}
+                </div>
+                <div class="media-content">
+                  <div class="field">
+                    <input type="hidden" name="post_id" value="{{post.id}}">
+                    <p class="control">
+                      <textarea class="textarea" placeholder="写下您的评论" name='content'></textarea>
+                    </p>
+                  </div>
+                  <nav class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <button class="button is-info"><span>评论</span></span><span class="icon">
+                          <i class="fas fa-star"></i>
+                          </span></button>
+                      </div>
+                    </div>
+                  </nav>
+                </div>
+              </article>
+        </form>
+          <div style="height:20px;"></div>
+          <h3 style="color: darkslateblue">文章评论区</h3>
+          <div class="container">
+            
+            <article class="media">
+              
+               
+              <div class="media-content">
+                <div class="content">
+                     {% if comments %}
+                        {% for comment in comments %}
+                  <p>
+                    <strong>{{ comment.user.userprofile.nike_name }}</strong>
+                    <br>
+                   {{ comment.content }}
+                    <br>
+                    
+                  </p>{%endfor%}
+                    {% else %}
+                        <p class="content is-large is-light" >还没有评论，试着评论一下吧</p> 
+                        
+                        {% endif %}      
+                </div>
+        
+              
+                
+              </div>
+            </article>      
+            
+          </div>
+         
+    </div>
+    {% else %}
+    <div class="container">
+    <div class='notification is-danger is-large'>请登录使用评论功能</div></div>
+    {% endif %}
+</div>
+<div class="level">
+    <div class="level-left">
+        {% if prev_post %}
+        <a class="pagination-previous" style="background-color: rgba(0,200,155,0.8);border: none;" href="{% url 'blog:post_detail' prev_post.id %}"><strong>上一篇：《{{ prev_post.title }}》</strong></a>
+        {% else %}
+        <a class="pagination-previous" style="background-color: rgba(255,150,0,0.8);border: none;" href='{% url "blog:index" %}' ><strong>无上一篇，点击返回首页</strong></a>
+        {% endif %}
+    </div>
+    <div class="level-right">
+        {% if next_post %}
+        <a class="pagination-previous" style="background-color: rgba(0,200,155,0.8);border: none;" href="{% url 'blog:post_detail' next_post.id %}" ><strong>下一篇：《{{ next_post.title }}》</strong></a>
+        {% else %}
+        <a class="pagination-previous" style="background-color: rgba(255,150,0,0.8);border: none;" href='{% url "blog:index" %}' ><strong>无下一篇，点击返回首页</strong></a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

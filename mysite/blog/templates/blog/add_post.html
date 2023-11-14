@@ -1,0 +1,22 @@
+{% extends "blog/base.html" %}
+
+{% block section %}
+
+
+ 
+
+<div class="content">
+  <h2 class="title">添加文章</h2>
+  
+  <form method="post">
+    {% csrf_token %}
+   
+    {{ post_form |safe}} 
+ 
+    <div style="height:20px;"></div>
+    <button class="button is-primary is-rounded">创建</button>
+  </form> 
+</div>
+
+{% endblock %}
+

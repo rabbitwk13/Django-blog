@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+{% load static category %}
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{% block title %}基于Django的游戏攻略博客的设计与实现{% endblock %}</title>
+	<!-- <link rel="stylesheet" href="{% static 'users/bulma.css' %}"> -->
+	<link rel="stylesheet" href='{% static "users/bulma.css" %}'>
+	<link rel="stylesheet" href='{% static "sass/test.css" %}'>
+	<script src=" {% static 'js/all.min.js' %}"></script>
+	<style>
+		.bg{
+            position: fixed;
+            top: 0;
+            left:0;
+            object-fit: cover;
+            width: 100vw;
+            height: 100vh;
+          }
+		 
+        .navbar.is-light .navbar-start > .navbar-item, .navbar.is-light .navbar-start .navbar-link, .navbar.is-light .navbar-end > .navbar-item, .navbar.is-light .navbar-end .navbar-link {
+   			color: rgba(0, 0, 0, 10);
+		}
+		a {
+			color: black;
+			cursor: pointer;
+			text-decoration: none;
+		}
+		a:hover {
+			color: dimgray;
+		}
+	</style>
+	<script src="../static/ckeditor/ckeditor-init.js" type="text/javascript"></script>
+	<script src="../static/ckeditor/ckeditor/ckeditor.js" type="text/javascript"></script>
+	<script>CKEDITOR.replace('id_content')</script>
+
+</head>
+
+<body>
+	<img src="{% static 'users/images/符华和小识4.jpg' %}"  alt="" class="bg">
+	<nav class="navbar is-light  has-shadow is-transparent" style="background-color: rgba(255,255,255,0);border: none;" role="navigation" aria-label="main navigation"  >
+			<div class="navbar-brand" >
+				<a class="navbar-item" href="https://bh3.mihoyo.com/">
+					<img src="{% static 'users/images/崩坏3图标.JPG' %}" width="120" height="30">
+				</a>
+
+				
+			</div>
+
+			<div id="navbarBasicExample" class="navbar-menu" style="font-weight: bold;" >
+				<div class="navbar-start">
+
+					{% block navbar-start %}
+					<a class="navbar-item" href="/">
+						首页
+					</a>
+					
+					{% get_category_list as category_list %}
+
+						{% for category in category_list %}
+						
+						<a class="navbar-item" href="{% url 'blog:category_list' category.id %}">
+							{{ category.name }}
+						</a>
+						
+						{% endfor %}
+		
+					{% endblock %}
+				</div>
+				
+				
+				<div class="navbar-end">
+
+					{% block navbar-end %}
+					<div class="navbar-item">
+						
+						{% if user.is_authenticated %}
+						<div> 
+							<form method="post" action="{% url 'blog:add_post' %}">
+								{% csrf_token %}
+								<a class="button is-light is-info" href="{% url 'blog:add_post' %}" target="_blank">
+									<span class="icon">
+										<i class="fas fa-info-circle"></i>
+									  </span><strong>新建文章</strong>
+								</a>
+							</form>
+							
+						</div><div style="width:10px;"></div> {%if user.is_staff%}
+						<div><form method="post" action="{% url 'blog:add_category' %}">
+								{% csrf_token %}
+								<a class="button is-light is-link" href="{% url 'blog:add_category' %}" target="_blank">
+									<span class="icon">
+										<i class="fas fa-info-circle"></i>
+									  </span><strong>新建文章分类</strong>
+								</a>
+							</form></div>
+							<div style="width:20px;"></div>{%else%}{%endif%}
+						<div class="buttons">
+							<a class="button is-success" href="{% url 'users:user_profile' %}" target="_blank">
+								<strong> {{ user.userprofile.nike_name }}</strong><span class="icon">
+									<i class="fas fa-home"></i>
+								  </span>
+							</a>
+							<a href="{% url 'users:logout' %}" class="button is-danger"><strong>退出登录</strong> <span class="icon">
+								<i class="fas fa-ban"></i>
+							  </span></a>
+							
+						</div>
+						{% else %}
+						<div class="buttons">
+							<a class="button is-light" href="{% url 'users:register' %}" target="_blank">
+								<strong>注册</strong>
+							</a>
+							<a class="button is-light" href="{% url 'users:login' %}" target="_blank">
+								<strong>登录</strong>
+							</a>
+						</div>
+						{% endif %}
+						 
+						
+					</div>
+					{% endblock %}
+				</div>
+			</div>
+	</nav>
+	<section class="section">
+		<div class=" container">
+			<div class="columns">
+				<div class="column is-8">
+					{% block section %}
+					{% block archives %}{% endblock  %}
+					{% get_new_post as post_list %}
+					{% if post_list %}
+					{% for post in post_list %}
+				
+					<div class="box" style="background-color: rgba(255,220,220,0.9);border: none;">
+						<h1 class="is-size-5 has-text-weight-bold">
+							<a href="{% url 'blog:post_detail' post.id %}"> {{ post.title }}</a>
+						</h1>
+						<div class=" is-size-7 has-text-grey pt-1 pb-1">
+							<span class="mr-3">作者：{{ post.owner }}</span> <span>发布日期：{{ post.add_date }}</span><span> <br> 浏览量：{{ post.pv }}</span>
+						</div>
+						<!-- https://docs.djangoproject.com/zh-hans/3.2/ref/templates/builtins/#truncatechars  官方文档 -->
+						<p class="mt-3">{{ post.desc|truncatechars:30 }}</p>
+					</div>
+					{% endfor %}
+					{% else %}
+					{% if user.is_authenticated %}
+					<div class="box">
+						<a href={% url "blog:add_post" %}><button class="button is-large is-danger is-light" >文章不存在，点此创建！！</button></a>
+					</div>
+					{% else %}
+					<div class="container">
+						<div class='notification is-danger is-large'>无文章，登录以使用添加文章功能</div></div>
+					{% endif %}
+					<!--  文档： https://docs.djangoproject.com/zh-hans/3.2/ref/paginator/#django.core.paginator.Paginator -->
+					{% endif %}
+					<!--  文档： https://docs.djangoproject.com/zh-hans/3.2/ref/paginator/#django.core.paginator.Paginator -->
+					{% if page_obj %}
+						<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+						{% if page_obj.has_previous %}
+							<a class="pagination-previous" style="background-color: rgba(255,210,100,0.9);border: none;" href="?page={{ page_obj.previous_page_number }}"><strong>上一页</strong></a>
+						{% endif %}
+						{% if page_obj.has_next %}
+						<a class="pagination-next" style="background-color: rgba(255,210,100,0.9);border: none;" href="?page={{ page_obj.next_page_number }}"><strong>下一页</strong></a>
+						{% endif %}
+						<ul class="pagination-list">
+						{% if page_obj.has_previous %}
+							<li ><a style="background-color: rgba(0,255,255,0.9);border: none;" class="pagination-link" aria-label="Goto page 45" href="?page={{ page_obj.previous_page_number }}"><strong>{{ page_obj.previous_page_number }}</strong></a></li>
+						{% endif %}
+							<li><a class="pagination-link is-current" aria-label="Page {{ page_obj.number }}" aria-current="page" href='?page={{ page_obj.number }}'><strong>{{ page_obj.number }}</strong></a></li>
+						{% if page_obj.has_next %}
+							<li ><a style="background-color: rgba(0,255,255,0.9);border: none;" class="pagination-link" href="?page={{ page_obj.next_page_number }}" aria-label="Goto page {{ page_obj.next_page_number }}"><strong>{{ page_obj.next_page_number }}</strong></a></li>
+						{% endif %}
+						</ul>
+						</nav>
+					{% endif %} 
+					{% endblock %}
+				</div>
+				<div class="column is-4">
+					{% if user.is_authenticated %}
+					{% block right %}
+					{% get_sidebar_list as sidebar_list %}
+					
+					{% for sidebar in sidebar_list %}
+					<div class="box" style="background-color: rgba(255,230,230,0.7);border: none;">
+						<h1 class=" is-size-5 title"><strong>{{ sidebar.title }}</strong></h1>
+						<p><strong>{{ sidebar.get_content|safe }}</strong></p>
+					</div>
+						
+					{% endfor %}
+						
+					{% endblock %}
+					{% else %}
+					{% endif %}
+					
+				</div>
+			</div>
+
+		</div>
+	</section>
+
+	
+	{% block footer %}
+	<footer class="footer container" style="background-color: rgba(255,255,255,0.8);border: none;">
+		<div class=" has-text-centered">
+			<div>
+			<p>
+				<strong><div><span><h4 class="title">逐火十三英桀</h4></span></div>
+					<div><span>“约束的惨剧”后，逐火之蛾仅存13位融合战士的统称。
+						
+						
+						</span></div> 
+					<div><span>出于某些理由，每位成员被授予了位次和名为“刻印”的称号。</span></div>
+					<div><span>以此十三“兵器”，背负文明存续的希望。</span></div>
+				</strong> 
+			  </p>
+			  </div>
+			  
+			  <div class='content' style="display: inline-flex;">
+				
+				<p>
+					<p>
+					<img class="is-rounded" style="width: 300px; height: 600px;" src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/vjANYBbpEwqEmof.jpg!a-3-800x.jpg">
+					<span style="display: inline-block; "><strong>凯文·卡斯兰娜</strong></span>
+					</p>
+					<p>
+					<img class="is-rounded" style="width: 300px; height: 600px; margin-right: 30px;" src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/ybaLiAbpEwqElCf.jpg!a-3-800x.jpg">
+					<span style="display: inline-block; "><strong>爱莉希雅</strong></span>
+					</p>
+					<p>
+					<img class="is-rounded" style="width: 300px; height: 600px; margin-right: 30px;" src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/fGfwsRbpEwqElmc.jpg!a-3-800x.jpg">
+					<span style="display: inline-block; "><strong>阿波尼亚</strong></span>
+					</p>
+					<p>
+					<img class="is-rounded" style="width: 300px; height: 600px; margin-right: 80px;" src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/SMlULxbpEwqEkEk.jpg!a-3-800x.jpg">
+					<span style="display: inline-block; "><strong>伊甸</strong></span>
+					</p>
+				</p>	
+				
+			</div>
+			<div class='content' style="display: inline-flex;">
+			<p>
+				<p>	
+				<img class="is-rounded" style="width: 300px; height: 600px; " src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/iURRDGbpEwqEkmF.jpg!a-3-800x.jpg">
+				<span style="display: inline-block; "><strong>维尔薇</strong></span>
+				</p>
+				<p>
+				<img class="is-rounded" style="width: 300px; height: 600px; margin-right: 10px;" src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/mHHGTBbpEwqEjyq.jpg!a-3-800x.jpg">
+				<span style="display: inline-block; "><strong>千劫</strong></span>
+				</p>
+				<p>
+				<img class="is-rounded" style="width: 300px; height: 600px; margin-right: 20px;" src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/BbQSkebpEwqEjlc.jpg!a-3-800x.jpg">
+				<span style="display: inline-block; "><strong>苏</strong></span>
+				</p>
+				<p>
+				<img class="is-rounded" style="width: 300px; height: 600px; margin-right: 20px;" src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/bwNJqwbpEwqEiCp.jpg!a-3-800x.jpg">
+			    <span style="display: inline-block; "><strong>樱</strong></span>
+				</p>
+			</p>		
+			</div>
+			<div class='content' style="display: inline-flex;">
+			<p>
+			<p>
+				<img class="is-rounded" style="width: 300px; height: 600px; margin-right: 20px; " src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/vniCAMbpEwqEikn.jpg!a-3-800x.jpg">
+				<span style="display: inline-block; "><strong>科斯魔</strong></span>
+			</p>
+			<p>
+				<img class="is-rounded" style="width: 300px; height: 600px; margin-right: 20px;" src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/ybqERmbpEwqEhwt.jpg!a-3-800x.jpg">
+				<span style="display: inline-block; "><strong>梅比乌斯</strong></span>
+			</p>
+			<p>
+				<img class="is-rounded" style="width: 300px; height: 600px; margin-right: 30px;" src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/ssjOynbpEwqEhga.jpg!a-3-800x.jpg">
+				<span style="display: inline-block; "><strong>格蕾修</strong></span>
+			</p>
+			<p>
+				<img class="is-rounded" style="width: 300px; height: 600px; margin-right: 60px;" src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/rHSuHnbpEwqEgxw.jpg!a-3-800x.jpg">
+				<span style="display: inline-block; "><strong>华</strong></span>		
+			</p>
+			<p>	
+				<img class="is-rounded" style="width: 300px; height: 600px; margin-right: 10px;" src="http://i.17173cdn.com/2fhnvk/YWxqaGBf/cms3/RLAlpybpEwqEfFl.jpg!a-3-800x.jpg">
+				<span style="display: inline-block; "><strong>帕朵·菲莉丝</strong></span>
+			</p>	
+			</p>	
+			</div>
+		</div>
+	</footer>
+	{% endblock %}
+
+</body>
+
+</html>

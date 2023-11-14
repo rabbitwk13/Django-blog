@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录界面</title>
+    
+    <style>
+          .forget-pwd {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            text-decoration: none;
+            color: plum;
+            transition: color 0.3s;
+            font-size: 18px; 
+            font-weight: bold; 
+          
+          }
+          
+          .forget-pwd:hover {
+            color: orange;
+          }
+          .bg{
+            position: fixed;
+            top: 0;
+            left:0;
+            object-fit: cover;
+            width: 100vw;
+            height: 100vh;
+          }
+          .box{
+            width: 950px;
+            height: 450px;
+            box-shadow: 0 5px 15px rgba(0,0,0,.8);
+            display: flex;
+            position: fixed;
+            top: 50%;
+            left:50%;
+            transform: translate(-50%,-50%);
+            box-sizing: border-box;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8); 
+          }
+          .left{
+            width: 65%;
+          }
+          .left>img{
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+          .right{
+            width: 35%;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 0 20px;
+          }
+          h1{
+            color: #fff;
+            text-align: center;
+            margin-top: 45px;
+          }
+          .inputItem{
+            height: 44px;
+            padding: 0;
+            padding-left: 8px;
+            border: none;
+            background: #fff;
+            outline: none;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 20px;
+          }
+          .btn{
+            background: linear-gradient(to right,#65CBF7,#B3A5FC);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, .6);
+            color: plum;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            height: 46px;
+            width: 100%;
+            font-size: 18px;
+            display: block;
+            margin: auto;
+            margin-top: 50px;
+            transition: color 0.3s;
+          }
+          .btn:hover {
+            color: #9C3493;
+          }
+    </style>
+</head>
+<body>
+  <img src="{% static 'users/images/符华和小识2.png' %}"  alt="" class="bg">
+  <div class="box">
+    <div class="left">
+      <img src="{% static 'users/images/符华和小识3.jpg' %}" alt="">
+    </div>
+    <div class="right">
+    <form action="" method="post">
+        {% csrf_token %}
+    
+        <div style="text-align:center; font-weight:bold; color:plum;">Django登录页面</div>
+        <div style="height: 40px;"></div>
+        {{ form }}
+       
+        <div class=" is-clearfix"></div>
+        <button type="submit" class="btn btn-default">登 录</button>
+        
+      </form>
+       <a class="forget-pwd" href='{% url "blog:index" %}'>返回博客首页</a>
+        
+      </div>
+  </div>
+</body>
+</html>

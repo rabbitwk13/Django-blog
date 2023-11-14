@@ -1,0 +1,14 @@
+{% load static category %}
+{% csrf_token %}
+<div class="content is-medium ">
+  
+   <strong> <span class="icon">
+    <i class="fas fa-music fa-flip-horizontal"></i>
+      </span><span style="color: deeppink;">永世乐土</span><span class="icon">
+    <i class="fas fa-music fa-flip-vertical"></i>
+      </span></strong></div>
+ 
+<audio controls >
+    <source  src="{% static 'users/music/永世乐土.mp3' %}" type="audio/mpeg">
+  </audio> 
+  
